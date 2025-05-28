@@ -1,0 +1,165 @@
+[
+    {
+      
+      "title": "Marina del Rey Marriott",
+      "description": "Ascend to our rooftop oasis and bask in the sun as you savor panoramic vistas of Los Angeles’s captivating skyline.",
+      "content": {
+        "time": 1721189466352,
+        "blocks": [
+          {
+            "id": "7p3itJ-d4H",
+            "type": "paragraph",
+            "data": {
+              "text": "Discover the pinnacle of luxury at Marina del Rey Marriott, an exquisite hotel nestled in the vibrant heart of Los Angeles. Offering a captivating blend of modern elegance and Southern charm, our establishment promises an unforgettable experience for both discerning leisure travelers and savvy business professionals."
+            }
+          }
+        ],
+        "version": "2.30.2"
+      },
+      "coverImg": "https://hotels-with.com/wp-content/uploads/2023/11/AF1Qip05Cg8EPPzyNPfwBufZNTPQ651QgkooHkF9UJwk408-h272-k-no.jpg",
+      "category": "Travel",
+      "author": {
+        "_id": "669006e1dc4eb38634639262",
+        "email": "admin1@gmail.com"
+      },
+      "rating": 4,
+      "createdAt": "2024-07-17T04:10:10.341Z",
+      "__v": 0
+    },
+    {
+     
+      "title": "The Grand Budapest",
+      "description": "Step into a world of timeless sophistication and cinematic charm in the heart of Zubrowka.",
+      "content": {
+        "time": 1721189566352,
+        "blocks": [
+          {
+            "id": "1a2b3c",
+            "type": "paragraph",
+            "data": {
+              "text": "Renowned for its impeccable service and art-deco allure, The Grand Budapest Hotel welcomes guests into a realm where past and present intertwine."
+            }
+          }
+        ],
+        "version": "2.30.2"
+      },
+      "coverImg": "https://example.com/images/grand-budapest.jpg",
+      "category": "Culture",
+      "author": {
+        "_id": "669006e1dc4eb38634639263",
+        "email": "admin2@gmail.com"
+      },
+      "rating": 5,
+      "createdAt": "2024-06-15T10:00:00.000Z",
+      "__v": 0
+    },
+    {
+      
+      "title": "Tokyo Capsule Haven",
+      "description": "Embrace minimalism and innovation in Tokyo’s futuristic capsule accommodations.",
+      "content": {
+        "time": 1721189666352,
+        "blocks": [
+          {
+            "id": "xyz123",
+            "type": "paragraph",
+            "data": {
+              "text": "Tokyo Capsule Haven redefines space efficiency and modern comfort, perfect for solo travelers and tech lovers alike."
+            }
+          }
+        ],
+        "version": "2.30.2"
+      },
+      "coverImg": "https://example.com/images/tokyo-capsule.jpg",
+      "category": "Innovation",
+      "author": {
+        "_id": "669006e1dc4eb38634639264",
+        "email": "admin3@gmail.com"
+      },
+      "rating": 4,
+      "createdAt": "2024-05-20T08:45:00.000Z",
+      "__v": 0
+    },
+    {
+     
+      "title": "Santorini Cliffside Suites",
+      "description": "Wake up to the Aegean Sea from the private terrace of your whitewashed suite.",
+      "content": {
+        "time": 1721189766352,
+        "blocks": [
+          {
+            "id": "santo456",
+            "type": "paragraph",
+            "data": {
+              "text": "Santorini Cliffside Suites offers breathtaking views, serene settings, and a taste of Greek luxury under the sun-drenched skies of the Aegean."
+            }
+          }
+        ],
+        "version": "2.30.2"
+      },
+      "coverImg": "https://example.com/images/santorini-suites.jpg",
+      "category": "Luxury",
+      "author": {
+        "_id": "669006e1dc4eb38634639265",
+        "email": "admin4@gmail.com"
+      },
+      "rating": 5,
+      "createdAt": "2024-08-01T14:30:00.000Z",
+      "__v": 0
+    },
+    {
+      
+      "title": "Nordic Ice Hotel",
+      "description": "Sleep surrounded by ice and snow in Scandinavia’s coolest hotel experience.",
+      "content": {
+        "time": 1721189866352,
+        "blocks": [
+          {
+            "id": "icehotel1",
+            "type": "paragraph",
+            "data": {
+              "text": "Crafted entirely from ice and snow, the Nordic Ice Hotel provides guests with a chillingly magical experience and access to northern lights adventures."
+            }
+          }
+        ],
+        "version": "2.30.2"
+      },
+      "coverImg": "https://example.com/images/ice-hotel.jpg",
+      "category": "Adventure",
+      "author": {
+        "_id": "669006e1dc4eb38634639266",
+        "email": "admin5@gmail.com"
+      },
+      "rating": 3,
+      "createdAt": "2024-09-10T11:15:00.000Z",
+      "__v": 0
+    },
+    {
+      
+      "title": "Dubai Desert Resort",
+      "description": "Escape into opulence and sand dunes at our ultra-luxury desert retreat.",
+      "content": {
+        "time": 1721189966352,
+        "blocks": [
+          {
+            "id": "dubai789",
+            "type": "paragraph",
+            "data": {
+              "text": "Dubai Desert Resort combines Bedouin heritage with world-class hospitality, offering camel rides, spa treatments, and stargazing in lavish comfort."
+            }
+          }
+        ],
+        "version": "2.30.2"
+      },
+      "coverImg": "https://example.com/images/dubai-desert.jpg",
+      "category": "Experience",
+      "author": {
+        "_id": "669006e1dc4eb38634639267",
+        "email": "admin6@gmail.com"
+      },
+      "rating": 5,
+      "createdAt": "2024-10-05T09:20:00.000Z",
+      "__v": 0
+    }
+  ]
+  
