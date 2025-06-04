@@ -1,13 +1,15 @@
+
 import React, { useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaGithub } from "react-icons/fa";
-import { Form } from "react-router-dom";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import InputField from "../../../share/InputField/InputField";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useNavigate, Link } from "react-router-dom";
+import { z } from "zod";
+import { useRegisterUserMutation } from "@/redux/features/auth/AuthApi";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const FormSchema = z.object({
   username: z
@@ -21,108 +23,117 @@ const FormSchema = z.object({
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const togglePassword = () => setShowPassword(!showPassword);
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
+  const navigate = useNavigate();
 
-  const methods = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-    },
   });
 
-  const onSubmit = (data) => {
-    console.log("Form submitted:", data);
-    toast.success("Signed up successfully");
-    // TODO: Send data to backend
+  const onSubmit = async (data) => {
+    try {
+      await registerUser(data).unwrap();
+      toast.success("Signed up successfully");
+      navigate("/login");
+    } catch (error) {
+      toast.error("Failed to register");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-indigo-100 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
-        <h2 className="text-4xl font-extrabold text-center text-indigo-600 mb-2">
-          Create Account
-        </h2>
-        <p className="text-center text-gray-500 text-sm mb-6">
-          Join us and explore new possibilities
-        </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <Link
+            to="/"
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mb-6"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back
+          </Link>
 
-        <FormProvider {...methods}>
-          <Form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-5">
-            <InputField
-              label="Username"
-              name="username"
-              placeholder="Enter your username"
-            />
-            <InputField
-              label="Email"
-              name="email"
-              placeholder="Enter your email"
-            />
-            <InputField
-              label="Password"
-              name="password"
-              placeholder="Enter your password"
-              type={showPassword ? "text" : "password"}
-              rightIcon={
-                <span
-                  onClick={togglePassword}
-                  className="text-sm text-blue-500 cursor-pointer hover:underline"
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Create an <span className="text-blue-600">Emmrex Blog App</span>
+              Account
+            </h2>
+          </div>
+        </div>
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" type="text" {...register("username")} />
+              {errors.username && (
+                <p className="text-red-500 text-sm">
+                  {errors.username.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" {...register("email")} />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? "Hide" : "Show"}
-                </span>
-              }
-            />
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+          </div>
 
+          <div>
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg"
+              disabled={isLoading}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Sign Up
+              {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
-          </Form>
-        </FormProvider>
+          </div>
 
-        <div className="flex items-center my-6">
-          <div className="flex-grow border-t border-gray-200" />
-          <span className="mx-4 text-sm text-gray-400">or sign up with</span>
-          <div className="flex-grow border-t border-gray-200" />
-        </div>
-
-        <div className="grid grid-cols-1 gap-3">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 w-full border-gray-300"
-          >
-            <FcGoogle className="text-xl" />
-            Continue with Google
-          </Button>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 w-full text-blue-600 border-gray-300"
-          >
-            <FaFacebook className="text-xl" />
-            Continue with Facebook
-          </Button>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 w-full text-gray-800 border-gray-300"
-          >
-            <FaGithub className="text-xl" />
-            Continue with GitHub
-          </Button>
-        </div>
-
-        <p className="text-sm text-center text-gray-500 mt-6">
-          Already have an account?{" "}
-          <a
-            href="/login"
-            className="text-blue-500 hover:underline font-medium"
-          >
-            Login
-          </a>
-        </p>
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+              >
+                Sign In
+              </Link>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   );

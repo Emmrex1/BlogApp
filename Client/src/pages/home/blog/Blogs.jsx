@@ -61,7 +61,7 @@ const Blogs = () => {
             >
               <Link to={`/blogs/${blog._id}`}>
                 <img
-                  src={blog.coverImg}
+                  src={blog?.coverImg}
                   alt={blog.title}
                   className="h-48 w-full object-cover"
                 />

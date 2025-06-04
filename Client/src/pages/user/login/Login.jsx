@@ -1,146 +1,134 @@
-import { useForm, FormProvider } from "react-hook-form";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaGithub } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
-import { Form, useNavigate } from "react-router-dom";
-import { Checkbox } from "@/components/ui/checkbox";
-import InputField from "@/share/InputField/InputField";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, ArrowLeft } from "lucide-react";
 import { useLoginUserMutation } from "@/redux/features/auth/AuthApi";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/features/auth/AuthSlice"; 
+import { Link, useNavigate } from "react-router-dom";
+import { setUser } from "@/redux/features/auth/AuthSlice";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook, FaGithub} from "react-icons/fa";
 
-const FormSchema = z.object({
-  email: z.string().email({ message: "Enter a valid email." }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
-  remember: z.boolean().optional(),
+const schema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const togglePassword = () => setShowPassword(!showPassword);
+    const dispatch = useDispatch();
+    const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation();
+    const navigate = useNavigate();
 
-  const dispatch = useDispatch(); 
-  const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation();
-  const navigate = useNavigate();
-
-  const methods = useForm({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      remember: false,
-    },
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data) => {
     try {
       const response = await loginUser(data).unwrap();
-      dispatch(setUser({ user: response.user })); 
+      console.log("Login success:", response);
+
+      if (!response?.user) {
+        throw new Error("User data missing from response");
+      }
+
+      dispatch(setUser({ user: response.user }));
       toast.success("Login Successful");
-      // console.log(response)
       navigate("/");
     } catch (error) {
-      toast.error("Login Failed");
+      console.error("Login error:", error);
+      toast.error(error?.data?.message || error.message || "Login failed");
     }
   };
+  
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-indigo-100 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
-        <h2 className="text-4xl font-extrabold text-center text-indigo-600 mb-2">
-          Sign In
-        </h2>
-        <p className="text-center text-gray-500 text-sm mb-6">
-          Welcome back! Log in to your account
-        </p>
+    <div className=" bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg p-8 space-y-6">
+        <div className="flex items-center space-x-3 mb-8">
+          <Link to="/">
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </Link>
+          <h1 className="text-xl font-semibold text-gray-900">
+            Sign In to <span className="text-blue-600">Emmrex Blog App</span>
+          </h1>
+        </div>
 
-        <FormProvider {...methods}>
-          <Form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-5">
-            <InputField
-              label="Email"
-              name="email"
-              placeholder="you@example.com"
-            />
-            <InputField
-              label="Password"
-              name="password"
-              placeholder="••••••••"
-              type={showPassword ? "text" : "password"}
-              rightIcon={
-                <span
-                  onClick={togglePassword}
-                  className="text-sm text-blue-500 cursor-pointer hover:underline"
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </span>
-              }
-            />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" {...register("email")} />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
+          </div>
 
-            <div className="flex items-center justify-between text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <Checkbox id="remember" {...methods.register("remember")} />
-                <label htmlFor="remember">Remember me</label>
-              </div>
-              <a href="#" className="text-blue-500 hover:underline">
-                Forgot password?
-              </a>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <Label htmlFor="password">Password</Label>
+              <button type="button" className="text-sm text-blue-600">
+                Forgot Password?
+              </button>
             </div>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <Eye className="h-4 w-4 text-gray-400" />
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
+            )}
+          </div>
 
-            <Button
-              disabled={loginLoading}
-              type="submit"
-              className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg"
-            >
-              {loginLoading ? "Logging in..." : "Login"}
-            </Button>
-          </Form>
-        </FormProvider>
+          <Button type="submit" className="w-full" disabled={loginLoading}>
+            {loginLoading ? "Signing in..." : "Sign In"}
+          </Button>
+        </form>
 
-        <div className="flex items-center my-6">
-          <div className="flex-grow border-t border-gray-200" />
-          <span className="mx-4 text-sm text-gray-400">or continue with</span>
-          <div className="flex-grow border-t border-gray-200" />
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Don&apos;t have an account?{" "}
+            <Link to="/register">
+              <button className="text-blue-600 hover:underline">Sign Up</button>
+            </Link>
+          </p>
         </div>
-
-        <div className="grid grid-cols-1 gap-3">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 w-full border-gray-300"
-          >
-            <FcGoogle className="text-xl" />
-            Continue with Google
-          </Button>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 w-full text-blue-600 border-gray-300"
-          >
-            <FaFacebook className="text-xl" />
-            Continue with Facebook
-          </Button>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 w-full text-gray-800 border-gray-300"
-          >
-            <FaGithub className="text-xl" />
-            Continue with GitHub
-          </Button>
+        <div className="space-y-3">
+          <h4 className="text-center font-medium text-gray-600">
+            Continue with
+          </h4>
+          <div className="flex flex-row items-center justify-center gap-3">
+            <button className="border border-gray-300 py-2 px-4 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
+              <FcGoogle className="text-xl" />
+            </button>
+            <button className="border border-gray-300 py-2 px-4 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
+              <FaFacebook className="text-xl text-blue-600" />
+            </button>
+            <button className="border border-gray-300 py-2 px-4 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
+              <FaGithub className="text-xl" />
+            </button>
+          </div>
         </div>
-
-        <p className="text-sm text-center text-gray-500 mt-6">
-          Don't have an account?{" "}
-          <a
-            href="/register"
-            className="text-blue-500 hover:underline font-medium"
-          >
-            Register here
-          </a>
-        </p>
       </div>
     </div>
   );

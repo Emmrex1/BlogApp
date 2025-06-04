@@ -1,41 +1,34 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import AdminNavigation from "./AdminNavigation";
 import { useSelector } from "react-redux";
+import AdminNavigation from "./AdminNavigation";
+import AdminTopbar from "../Topbar/AdminTopbar";
+
 
 const AdminLayout = () => {
-  const { user, loading, error } = useSelector((state) => state.auth);
+  const { admin, token } = useSelector((state) => state.adminAuth);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-lg font-medium">Checking admin access...</p>
-      </div>
-    );
-  }
-
-  if (!user || user.role !== "admin") {
-    return <Navigate to="/login" />;
-  }
-
-  if (error) {
-    return (
-      <div className="text-red-600 p-8">
-        <p>Error verifying user. Please try again later.</p>
-      </div>
-    );
+  if (!admin || admin.role !== "admin" || !token) {
+    return <Navigate to="/admin-login" />;
   }
 
   return (
-    <div className="container mx-auto flex flex-col md:flex-row gap-4 items-start justify-start min-h-screen">
-      <header className="lg:w-1/5 sm:w-2/5 w-full">
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-full sm:w-2/5 md:w-1/4 lg:w-1/5 bg-white border-r">
         <AdminNavigation />
-      </header>
+      </aside>
 
-      <main className="p-8 bg-white w-full shadow rounded-md">
-       
-        <Outlet />
-      </main>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Topbar */}
+        <AdminTopbar />
+
+        {/* Page Content */}
+        <main className="p-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };

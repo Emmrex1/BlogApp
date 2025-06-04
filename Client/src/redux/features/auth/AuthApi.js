@@ -36,7 +36,7 @@ export const authApi = createApi({
       }),
     }),
 
-    // ✅ Get all users (changed from mutation to query)
+    // ✅ Get all users 
     getUsers: builder.query({
       query: () => "/users",
       providesTags: ["User"],
@@ -52,14 +52,15 @@ export const authApi = createApi({
     }),
 
     // Update user role
-    updateUserRole: builder.mutation({
-      query: ({ userId, role }) => ({
-        url: `/users/${userId}`,
-        method: "PUT",
-        body: { role },
-      }),
-      invalidatesTags: ["User"],
-    }),
+updateUser: builder.mutation({
+  query: ({ userId, role, status }) => ({
+    url: `/users/${userId}`,
+    method: "PUT",
+    body: { role, status },  
+  }),
+  invalidatesTags: ["User"],
+}),
+
 
   }),
 });
@@ -70,7 +71,7 @@ export const {
   useLogoutUserMutation,
   useGetUsersQuery,        
   useDeleteUserMutation,
-  useUpdateUserRoleMutation,
+  useUpdateUserMutation,
 } = authApi;
 
 export default authApi;
