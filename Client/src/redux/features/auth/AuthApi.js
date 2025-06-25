@@ -61,6 +61,25 @@ updateUser: builder.mutation({
   invalidatesTags: ["User"],
 }),
 
+// Forgot Password
+forgotPassword: builder.mutation({
+  query: (email) => ({
+    url: "/forgot-password",
+    method: "POST",
+    body: { email },
+  }),
+}),
+
+// Reset Password
+resetPassword: builder.mutation({
+  query: ({ token, password }) => ({
+    url: `/reset-password/${token}`,
+    method: "POST",
+    body: { password },
+  }),
+}),
+
+
 
   }),
 });
@@ -72,6 +91,8 @@ export const {
   useGetUsersQuery,        
   useDeleteUserMutation,
   useUpdateUserMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;
 
 export default authApi;

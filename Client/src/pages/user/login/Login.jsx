@@ -8,12 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, ArrowLeft } from "lucide-react";
 import { useLoginUserMutation } from "@/redux/features/auth/AuthApi";
-import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { setUser } from "@/redux/features/auth/AuthSlice";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaGithub} from "react-icons/fa";
+import { toast } from "sonner";
+
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -37,7 +38,6 @@ const LoginPage = () => {
   const onSubmit = async (data) => {
     try {
       const response = await loginUser(data).unwrap();
-      console.log("Login success:", response);
 
       if (!response?.user) {
         throw new Error("User data missing from response");
@@ -45,16 +45,20 @@ const LoginPage = () => {
 
       dispatch(setUser({ user: response.user }));
       toast.success("Login Successful");
-      navigate("/");
+
+      setTimeout(() => {
+        navigate("/");
+      }, 300); 
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error?.data?.message || error.message || "Login failed");
     }
   };
   
+  
 
   return (
-    <div className=" bg-gray-50 flex items-center justify-center p-4">
+    <div className=" min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-lg p-8 space-y-6">
         <div className="flex items-center space-x-3 mb-8">
           <Link to="/">
@@ -77,10 +81,14 @@ const LoginPage = () => {
           <div className="space-y-2">
             <div className="flex justify-between">
               <Label htmlFor="password">Password</Label>
-              <button type="button" className="text-sm text-blue-600">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-blue-600 hover:underline"
+              >
                 Forgot Password?
-              </button>
+              </Link>
             </div>
+
             <div className="relative">
               <Input
                 id="password"

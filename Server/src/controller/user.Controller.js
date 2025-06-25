@@ -1,6 +1,10 @@
 const User = require('../models/user.model');
 const generateToken = require('../middleware/generateToken');
+const { sendResetEmail } = require('../../utils/sendEmail');
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
+const JWT_SECRET = process.env.JWT_SECRET_KEY;
 // Register
 exports.registerUser = async (req, res) => {
   try {
@@ -99,9 +103,8 @@ exports.deleteUser = async (req, res) => {
 exports.updateUser = async (req, res) => { 
   try {
     const { id } = req.params;
-    const { role, status } = req.body;  // accept status too
+    const { role, status } = req.body; 
 
-    // Build update object dynamically
     const updateData = {};
     if (role) updateData.role = role;
     if (status) updateData.status = status;
@@ -118,3 +121,45 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ message: "Failed to update user." });
   }
 };
+
+// Forgot Password
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).send({ message: "User not found" });
+
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "15m" });
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+    await sendResetEmail(email, resetLink);
+
+    res.status(200).send({ message: "Reset link sent to email" });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).send({ message: "Failed to send reset link" });
+  }
+};
+
+// Reset Password
+exports.resetPassword = async (req, res) => {
+  const { password } = req.body;
+  const { token } = req.params;
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).send({ message: "User not found" });
+
+    user.password = password;
+    await user.save();        
+
+    res.status(200).send({ message: "Password has been reset" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(400).send({ message: "Invalid or expired token" });
+  }
+};
+
+

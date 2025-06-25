@@ -14,6 +14,9 @@ const generateToken = async (userId) => {
         console.error("Error generating Token",error);
         throw error
     }
+
+    
 }
 
 module.exports = generateToken;
+
