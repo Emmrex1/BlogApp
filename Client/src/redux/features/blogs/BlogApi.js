@@ -3,26 +3,25 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const blogApi = createApi({
   reducerPath: 'blogsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:4005/api/',
+    baseUrl: import.meta.env.VITE_API_BASE_URL +"/api/", 
     credentials: 'include',
   }),
   tagTypes: ['Blogs'],
   endpoints: (builder) => ({
-   
     fetchBlogs: builder.query({
       query: ({ search = '', category = '', location = '' }) =>
         `/blogs?search=${search}&category=${category}&location=${location}`,
       providesTags: ['Blogs'],
     }),
-   
+
     fetchBlogById: builder.query({
       query: (id) => `/blogs/${id}`,
     }),
-   
+
     fetchRelatedBlogs: builder.query({
       query: (id) => `/blogs/related/${id}`,
     }),
-    
+
     postBlog: builder.mutation({
       query: (newBlog) => ({
         url: `/blogs/create-post`,
@@ -32,7 +31,7 @@ export const blogApi = createApi({
       }),
       invalidatesTags: ['Blogs'],
     }),
-    
+
     updateBlog: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/blogs/update-post/${id}`,
@@ -42,8 +41,7 @@ export const blogApi = createApi({
       }),
       invalidatesTags: ['Blogs'],
     }),
-    
-    
+
     deleteBlog: builder.mutation({
       query: (id) => ({
         url: `/blogs/delete/${id}`,
