@@ -1,5 +1,5 @@
 import { useFetchBlogByIdQuery } from '@/redux/features/blogs/BlogApi';
-import { usePostCommentMutation } from '@/redux/features/comments/commentApi';
+import { usePostCommentMutation } from '@/redux/features/comments/CommentApi';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
