@@ -9,6 +9,14 @@ const JWT_SECRET = process.env.JWT_SECRET_KEY;
 exports.registerUser = async (req, res) => {
   try {
     const { email, password, username } = req.body;
+
+    // ✅ Check if the email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).send({ message: "Email is already registered" });
+    }
+
+    // ✅ Proceed to create new user
     const user = new User({ email, password, username });
     await user.save();
 
@@ -22,6 +30,7 @@ exports.registerUser = async (req, res) => {
     res.status(500).send({ message: "Registration failed" });
   }
 };
+
 
 // Login
 exports.loginUser = async (req, res) => {

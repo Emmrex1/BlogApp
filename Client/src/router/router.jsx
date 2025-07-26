@@ -37,33 +37,56 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Home /> },
       { path: "about-us", element: <About /> },
-      {
-        path: "privacy-policy",
-        element: (
-          // <RequireAuth>
-          <PrivacyPolicy />
-          // </RequireAuth>
-        ),
-      },
+
       {
         path: "contact-us",
+        element: (<ContactUs />), },
+      {
+        path: "blogs/:id",
         element: (
           <RequireAuth>
-            <ContactUs />
+            <SingleBlog />{" "}
           </RequireAuth>
         ),
       },
-      { path: "blogs/:id", element: <SingleBlog /> },
       { path: "thankyuu", element: <ThankYou /> },
     ],
   },
   // 🔐 Auth pages (No Navbar)
- 
-{ path: "/login", element: <GuestOnlyRoute><LoginPage /></GuestOnlyRoute> },
-{ path: "/register", element: <GuestOnlyRoute><Register /></GuestOnlyRoute> },
-{ path: "/forgot-password", element: <GuestOnlyRoute><ForgotPassword /></GuestOnlyRoute> },
-{ path: "/reset-password/:token", element: <GuestOnlyRoute><ResetPassword /></GuestOnlyRoute> },
-{ path: "/reset-success", element: <ResetSuccess /> },
+
+  {
+    path: "/login",
+    element: (
+      <GuestOnlyRoute>
+        <LoginPage />
+      </GuestOnlyRoute>
+    ),
+  },
+  {
+    path: "/register",
+    element: (
+      <GuestOnlyRoute>
+        <Register />
+      </GuestOnlyRoute>
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: (
+      <GuestOnlyRoute>
+        <ForgotPassword />
+      </GuestOnlyRoute>
+    ),
+  },
+  {
+    path: "/reset-password/:token",
+    element: (
+      <GuestOnlyRoute>
+        <ResetPassword />
+      </GuestOnlyRoute>
+    ),
+  },
+  { path: "/reset-success", element: <ResetSuccess /> },
 
   // Admin pages
   {

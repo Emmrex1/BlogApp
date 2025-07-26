@@ -16,6 +16,7 @@ import { FaFacebook, FaGithub} from "react-icons/fa";
 import { toast } from "sonner";
 
 
+
 const schema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -58,7 +59,7 @@ const LoginPage = () => {
   
 
   return (
-    <div className=" min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className=" min-h-screen bg-gray-50 flex items-center justify-center p-4 dark:bg-slate-900">
       <div className="w-full max-w-md bg-white rounded-lg p-8 space-y-6">
         <div className="flex items-center space-x-3 mb-8">
           <Link to="/">

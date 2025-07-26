@@ -1,14 +1,16 @@
+
 import { useEffect, useState } from "react";
 import logo from "../../assets/logo/Screenshot_2024-11-02_105649-removebg-preview.png";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { IoMdMenu } from "react-icons/io";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoSearchSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import avaterImg from "../../assets/logo/commentIcon.png";
 import { useLogoutUserMutation } from "@/redux/features/auth/AuthApi";
 import { logout } from "@/redux/features/auth/AuthSlice";
 import { toast } from "sonner";
-import { Moon, Sun } from "lucide-react";
+import { FaBell, FaUserCircle, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
 
 const NavList = [
   { name: "Home", path: "/" },
@@ -19,35 +21,16 @@ const NavList = [
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [LogoutUser] = useLogoutUserMutation();
 
   const [sticky, setSticky] = useState(false);
-  const [theme, setTheme] = useState("light");
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else if (prefersDark) {
-      setTheme("dark");
-    }
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
 
   useEffect(() => {
     const handleScroll = () => setSticky(window.scrollY > 0);
@@ -60,25 +43,40 @@ const Navbar = () => {
       await LogoutUser().unwrap();
       dispatch(logout());
       toast.success("Logged out successfully");
+      setIsUserMenuOpen(false);
     } catch (error) {
       toast.error("Logout failed");
       console.error("Logout error:", error);
     }
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
+
   return (
     <header
-      className={`fixed top-0 left-0 w-full h-[72px] flex items-center z-40 py-3 ${
-        sticky ? "shadow-md" : ""
-      } bg-white dark:bg-gray-900 transition-all duration-300`}
+      className={`fixed top-0 left-0 w-full h-[72px] flex items-center z-50 py-3 ${
+        sticky
+          ? "shadow-md bg-white backdrop-blur-sm bg-opacity-95"
+          : "bg-transparent"
+      } transition-all duration-300`}
     >
-      <nav className="container mx-auto flex justify-between items-center px-6">
-        <Link to="/">
-          <img src={logo} alt="Site Logo" className="h-9" />
+      <nav className="container mx-auto flex justify-between items-center px-4 sm:px-6">
+        <Link to="/" className="flex items-center">
+          <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
+            {/* <img src={logo} alt="Site Logo" className="h-9" /> */}
+            EmmrexBlogApp
+          </span>
         </Link>
 
         {/* Desktop Nav */}
-        <ul className="hidden sm:flex items-center gap-7">
+        <ul className="hidden md:flex items-center gap-7">
           {NavList.map((item, i) => (
             <li key={i}>
               <NavLink
@@ -86,83 +84,138 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   isActive
                     ? "text-blue-600 font-semibold border-b-2 border-blue-600"
-                    : "text-gray-700 dark:text-gray-300 hover:text-blue-600"
+                    : "text-gray-700 hover:text-blue-600 transition-colors"
                 }
               >
                 {item.name}
               </NavLink>
             </li>
           ))}
-
-          {/* Search */}
-          <label className="px-3 py-2 border rounded-md flex items-center gap-2 dark:border-gray-700">
-            <input
-              type="text"
-              placeholder="Search"
-              aria-label="Search"
-              className="grow outline-none rounded-md px-1 dark:bg-slate-900 dark:text-white"
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="w-4 h-4 opacity-70 dark:text-white"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </label>
-
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-            className="focus:outline-none"
-          >
-            {theme === "dark" ? (
-              <Sun className="text-yellow-400 w-5 h-5" />
-            ) : (
-              <Moon className="text-gray-700 w-5 h-5" />
-            )}
-          </button>
-
-          {/* Auth */}
-          {user?.role === "user" ? (
-            <div className="flex items-center gap-3">
-              <img
-                src={avaterImg}
-                alt="Avatar"
-                className="w-8 h-8 rounded-full"
-              />
-              <button
-                onClick={handleLogout}
-                className="bg-[#1E73BE] px-4 py-1.5 text-white rounded-sm"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <NavLink to="/login" className="text-blue-500 font-semibold">
-              Login
-            </NavLink>
-          )}
         </ul>
 
+        <div className="hidden md:flex items-center gap-4">
+          {/* Search Button */}
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Search"
+          >
+            <IoSearchSharp className="text-gray-600 text-xl" />
+          </button>
+
+          {/* Notification */}
+          <button
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors relative"
+            aria-label="Notifications"
+          >
+            <FaBell className="text-gray-600 text-xl" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+
+          {/* CTA Button */}
+          <Link
+            to="/donate"
+            className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-4 py-2 rounded-md font-medium hover:opacity-90 transition-opacity shadow-md"
+          >
+            Donate
+          </Link>
+
+          {/* User Dropdown */}
+          {user?.role === "user" ? (
+            <div className="relative">
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 focus:outline-none"
+              >
+                <img
+                  src={user?.avatar || avaterImg}
+                  alt="Avatar"
+                  className="w-8 h-8 rounded-full border-2 border-blue-500 object-cover"
+                />
+              </button>
+
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                  <div className="px-4 py-3 border-b">
+                    <p className="text-sm font-medium text-gray-900">
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    <MdDashboard className="mr-3" />
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/profile"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    <FaUserCircle className="mr-3" />
+                    My Profile
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    <FaCog className="mr-3" />
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <FaSignOutAlt className="mr-3" />
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <NavLink
+                to="/login"
+                className="text-blue-600 font-medium hover:underline"
+              >
+                Login
+              </NavLink>
+              <span className="text-gray-300">|</span>
+              <NavLink
+                to="/register"
+                className="text-gray-700 font-medium hover:underline"
+              >
+                Register
+              </NavLink>
+            </div>
+          )}
+        </div>
+
         {/* Mobile Menu Icon */}
-        <div className="sm:hidden">
+        <div className="md:hidden flex items-center gap-3">
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="p-2"
+            aria-label="Search"
+          >
+            <IoSearchSharp className="text-gray-600 text-xl" />
+          </button>
           <button
             onClick={toggleMenu}
             aria-label="Toggle mobile menu"
             aria-expanded={isMenuOpen}
-            className="px-3 py-3 bg-gray-100 dark:bg-slate-800 rounded"
+            className="p-2"
           >
             {isMenuOpen ? (
-              <IoClose className="text-xl" />
+              <IoClose className="text-2xl" />
             ) : (
-              <IoMdMenu className="text-xl" />
+              <IoMdMenu className="text-2xl" />
             )}
           </button>
         </div>
@@ -170,56 +223,109 @@ const Navbar = () => {
 
       {/* Mobile Nav */}
       {isMenuOpen && (
-        <ul className="sm:hidden fixed top-[72px] left-0 w-full bg-white dark:bg-gray-800 z-30 shadow-md p-6 space-y-4 transition-all duration-300">
-          {NavList.map((item, i) => (
-            <li key={i}>
-              <NavLink
-                to={item.path}
+        <div className="md:hidden fixed top-[72px] left-0 w-full bg-white z-40 shadow-lg p-6 transition-all duration-300 h-[calc(100vh-72px)]">
+          <ul className="space-y-4 mb-8">
+            {NavList.map((item, i) => (
+              <li key={i}>
+                <NavLink
+                  to={item.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "block py-2 text-blue-600 font-semibold"
+                      : "block py-2 text-gray-700 hover:text-blue-600"
+                  }
+                >
+                  {item.name}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+
+          {user?.role === "user" ? (
+            <div className="pt-4 border-t">
+              <Link
+                to="/dashboard"
                 onClick={() => setIsMenuOpen(false)}
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-blue-600 font-semibold"
-                    : "text-gray-700 dark:text-gray-300"
-                }
+                className="block py-2 text-gray-700"
               >
-                {item.name}
-              </NavLink>
-            </li>
-          ))}
-
-          <li>
-            <button onClick={toggleTheme} className="flex items-center gap-2">
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
-              )}
-              {theme === "dark" ? "Light Mode" : "Dark Mode"}
-            </button>
-          </li>
-
-          <li>
-            {user?.role === "user" ? (
+                Dashboard
+              </Link>
+              <Link
+                to="/profile"
+                onClick={() => setIsMenuOpen(false)}
+                className="block py-2 text-gray-700"
+              >
+                My Profile
+              </Link>
+              <Link
+                to="/settings"
+                onClick={() => setIsMenuOpen(false)}
+                className="block py-2 text-gray-700"
+              >
+                Settings
+              </Link>
               <button
                 onClick={() => {
                   handleLogout();
                   setIsMenuOpen(false);
                 }}
-                className="text-red-500"
+                className="w-full text-left py-2 text-red-600 flex items-center"
               >
-                Logout
+                <FaSignOutAlt className="mr-3" />
+                Sign out
               </button>
-            ) : (
+            </div>
+          ) : (
+            <div className="flex gap-4 pt-4 border-t">
               <NavLink
                 to="/login"
                 onClick={() => setIsMenuOpen(false)}
-                className="text-blue-500"
+                className="flex-1 text-center py-2 text-blue-600 font-medium border border-blue-600 rounded-md"
               >
                 Login
               </NavLink>
-            )}
-          </li>
-        </ul>
+              <NavLink
+                to="/register"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex-1 text-center py-2 bg-blue-600 text-white font-medium rounded-md"
+              >
+                Register
+              </NavLink>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Search Modal */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-2xl p-4 shadow-xl">
+            <form onSubmit={handleSearch} className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search content..."
+                autoFocus
+                className="w-full p-4 pl-12 pr-20 text-lg border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <IoSearchSharp className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+              >
+                Search
+              </button>
+            </form>
+            <button
+              onClick={() => setIsSearchOpen(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+              <IoClose className="text-2xl" />
+            </button>
+          </div>
+        </div>
       )}
     </header>
   );

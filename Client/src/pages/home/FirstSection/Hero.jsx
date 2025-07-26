@@ -12,12 +12,12 @@ import img5 from "../../../assets/logo/hotel img 5.jpeg";
 
 const FirstSection = () => {
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center md:gap-14 gap-8">
-      <div className="md:w-1/2 w-full text-center ">
-        <h1 className="md:text-5xl text-3xl font-bold md:leading-tight">
+    <div className="flex flex-col md:flex-row justify-between items-center md:gap-14 gap-8 dark:bg-slate-900">
+      <div className="md:w-1/2 w-full text-center dark:bg-slate-900">
+        <h1 className="md:text-5xl text-3xl font-bold md:leading-tight dark:text-white">
           Hotel with Rooftop Pools Near me
         </h1>
-        <p className="py-4 ">
+        <p className="py-4 dark:text-white">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Error quam
           est assumenda quis quisquam voluptatibus tenetur nisi hic mollitia,
           ducimus officiis exercitationem, cupiditate qui distinctio, asperiores
@@ -49,7 +49,7 @@ const FirstSection = () => {
               spaceBetween: 50,
             },
           }}
-          modules={[Pagination,Autoplay]}
+          modules={[Pagination, Autoplay]}
           className="mySwiper"
         >
           <SwiperSlide>
