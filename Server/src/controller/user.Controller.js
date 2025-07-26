@@ -1,6 +1,6 @@
 const User = require('../models/user.model');
 const generateToken = require('../middleware/generateToken');
-const { sendResetEmail } = require('../../utils/sendEmail');
+const { sendResetEmail } = require('../middleware/sendEmail');
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
