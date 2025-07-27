@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
 
-// CORS configuration
+// CORS configurat
 const allowedOrigins = [
   'http://localhost:5173',
   'https://emmrexblog.vercel.app',
