@@ -1,4 +1,6 @@
+// Load environment variables
 require("dotenv").config(); 
+
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
@@ -10,13 +12,23 @@ app.use(express.json());
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
 
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://emmrexblog.vercel.app',
+];
+
 app.use(cors({
-  origin: [
-    'http://localhost:5174',
-    'https://emmrexblog.vercel.app'
-  ],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
+
 
 
 // Routes
@@ -32,15 +44,18 @@ app.use('/api/comments', commentRoutes);
 app.use('/api', contactRoutes);
 app.use('/api/auth', adminRoutes);
 
-// DB
-mongoose.connect(process.env.CONNECTION_STRING)
-  .then(() => console.log('MongoDB connected...'))
-  .catch((err) => console.log('Database connection error:', err));
-
+// Root route
 app.get('/', (req, res) => {
   res.send('Hello developer');
 });
 
-app.listen(process.env.PORT || 4005, () => {
-  console.log(`Server running on port ${process.env.PORT || 4005}`);
+// Database connection
+mongoose.connect(process.env.CONNECTION_STRING)
+  .then(() => console.log('MongoDB connected...'))
+  .catch((err) => console.error('Database connection error:', err));
+
+// Start server
+const PORT = process.env.PORT || 4005;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

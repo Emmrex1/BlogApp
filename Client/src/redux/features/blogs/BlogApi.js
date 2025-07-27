@@ -1,9 +1,79 @@
+
+// import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+// export const blogApi = createApi({
+//   reducerPath: 'blogsApi',
+//   baseQuery: fetchBaseQuery({
+//     baseUrl: 'http://localhost:4005/api/',
+//     credentials: 'include',
+//   }),
+//   tagTypes: ['Blogs'],
+//   endpoints: (builder) => ({
+   
+//     fetchBlogs: builder.query({
+//       query: ({ search = '', category = '', location = '' }) =>
+//         `/blogs?search=${search}&category=${category}&location=${location}`,
+//       providesTags: ['Blogs'],
+//     }),
+   
+//     fetchBlogById: builder.query({
+//       query: (id) => `/blogs/${id}`,
+//     }),
+   
+//     fetchRelatedBlogs: builder.query({
+//       query: (id) => `/blogs/related/${id}`,
+//     }),
+    
+//     postBlog: builder.mutation({
+//       query: (newBlog) => ({
+//         url: `/blogs/create-post`,
+//         method: "POST",
+//         body: newBlog,
+//         credentials: "include",
+//       }),
+//       invalidatesTags: ['Blogs'],
+//     }),
+    
+//     updateBlog: builder.mutation({
+//       query: ({ id, ...data }) => ({
+//         url: `/blogs/update-post/${id}`,
+//         method: "PATCH",
+//         credentials: "include",
+//         body: data,
+//       }),
+//       invalidatesTags: ['Blogs'],
+//     }),
+    
+    
+//     deleteBlog: builder.mutation({
+//       query: (id) => ({
+//         url: `/blogs/delete/${id}`,
+//         method: "DELETE",
+//         credentials: "include",
+//       }),
+//       invalidatesTags: ['Blogs'],
+//     }),
+//   }),
+// });
+
+// export const {
+//   useFetchBlogsQuery,
+//   useFetchBlogByIdQuery,
+//   useFetchRelatedBlogsQuery,
+//   usePostBlogMutation,
+//   useUpdateBlogMutation,
+//   useDeleteBlogMutation,
+// } = blogApi;
+
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+const baseURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4005';
+console.log('Using baseURL:', baseURL);
+
 
 export const blogApi = createApi({
   reducerPath: 'blogsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_BASE_URL +"/api/", 
+    baseUrl: `${baseURL}/api/`,
     credentials: 'include',
   }),
   tagTypes: ['Blogs'],
@@ -13,40 +83,35 @@ export const blogApi = createApi({
         `/blogs?search=${search}&category=${category}&location=${location}`,
       providesTags: ['Blogs'],
     }),
-
     fetchBlogById: builder.query({
       query: (id) => `/blogs/${id}`,
     }),
-
     fetchRelatedBlogs: builder.query({
       query: (id) => `/blogs/related/${id}`,
     }),
-
     postBlog: builder.mutation({
       query: (newBlog) => ({
         url: `/blogs/create-post`,
-        method: "POST",
+        method: 'POST',
         body: newBlog,
-        credentials: "include",
+        credentials: 'include',
       }),
       invalidatesTags: ['Blogs'],
     }),
-
     updateBlog: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/blogs/update-post/${id}`,
-        method: "PATCH",
-        credentials: "include",
+        method: 'PATCH',
+        credentials: 'include',
         body: data,
       }),
       invalidatesTags: ['Blogs'],
     }),
-
     deleteBlog: builder.mutation({
       query: (id) => ({
         url: `/blogs/delete/${id}`,
-        method: "DELETE",
-        credentials: "include",
+        method: 'DELETE',
+        credentials: 'include',
       }),
       invalidatesTags: ['Blogs'],
     }),
